@@ -2,7 +2,7 @@ import numpy as np
 from functools import reduce
 from multiagent.core import World, Agent, Landmark, MBTI_Agent
 from multiagent.scenario import BaseScenario
-import mbti 
+import multiagent.mbti as mbti
 
 class Scenario(BaseScenario):
 

@@ -9,7 +9,7 @@ import numpy as np
 from multiagent.core import World, Agent, Landmark, MBTI_Agent
 from multiagent.scenario import BaseScenario
 import random
-import mbti
+import multiagent.mbti as mbti
 
 class CryptoAgent(MBTI_Agent):
     def __init__(self):

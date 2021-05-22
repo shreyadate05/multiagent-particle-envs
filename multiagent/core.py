@@ -78,6 +78,33 @@ class Agent(Entity):
         # script behavior to execute
         self.action_callback = None
 
+# properties of MBTI agent entities
+class MBTI_Agent(Entity):
+    def __init__(self, E=0, I=0, N=0, S=0, T=0, F=0, P=0, J=0):
+        super(MBTI_Agent, self).__init__()
+        # agents are movable by default
+        self.movable = True
+        # cannot send communication signals
+        self.silent = False
+        # cannot observe the world
+        self.blind = False
+        # physical motor noise amount
+        self.u_noise = None
+        # communication noise amount
+        self.c_noise = None
+        # control range
+        self.u_range = 1.0
+        # state
+        self.state = AgentState()
+        # action
+        self.action = Action()
+        # script behavior to execute
+        self.action_callback = None
+
+        # script behavior to execute
+        self.E = E
+        self.I = I
+
 # multi-agent world
 class World(object):
     def __init__(self):

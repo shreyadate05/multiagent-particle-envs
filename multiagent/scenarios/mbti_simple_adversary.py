@@ -10,9 +10,9 @@ class Scenario(BaseScenario):
         world = World()
         # set any world properties first
         world.dim_c = 2
-        num_agents = 8
+        num_agents = 6
         world.num_agents = num_agents
-        num_adversaries = 5
+        num_adversaries = 2
         num_landmarks = num_agents - 1
         
         # add agents
@@ -23,10 +23,13 @@ class Scenario(BaseScenario):
             agent.silent = True
             agent.size = 0.15
             if i < num_adversaries:
+                agent.name = 'adversary %d' % i
                 agent.adversary = True
             else:
+                agent.name = 'agent %d' % (i - num_adversaries)
                 agent.adversary = False
-                agent.E = 1
+                agent.E = 0
+                agent.I = 1
 
         # add landmarks
         world.landmarks = [Landmark() for i in range(num_landmarks)]
@@ -86,7 +89,7 @@ class Scenario(BaseScenario):
         # Agents are rewarded based on minimum agent distance to each landmark
         old_rew  =  self.adversary_reward(agent, world) if agent.adversary else self.agent_reward(agent, world)
         mbti_rew =  mbti.getMBTIReward(agent, world)
-        return mbti_rew + old_rew
+        return mbti_rew*old_rew
 
     def agent_reward(self, agent, world):
         # Rewarded based on how close any good agent is to the goal landmark, and how far the adversary is from it

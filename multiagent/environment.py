@@ -88,7 +88,10 @@ class MultiAgentEnv(gym.Env):
             self._set_action(action_n[i], agent, self.action_space[i])
         # advance world state
         self.world.step()
+
         # record observation for each agent
+        good_agnt_rewards = {}
+        adversary_rewards = {}
         for agent in self.agents:
             obs_n.append(self._get_obs(agent))
             reward_n.append(self._get_reward(agent))
@@ -96,12 +99,35 @@ class MultiAgentEnv(gym.Env):
 
             info_n['n'].append(self._get_info(agent))
 
-        # all agents get total reward in cooperative case
-        reward = np.sum(reward_n)
-        if self.shared_reward:
-            reward_n = [reward] * self.n
+            if agent.adversary:
+                adversary_rewards[agent] = self._get_reward(agent)
+            else:
+                good_agnt_rewards[agent] = self._get_reward(agent)
+        
+        # Handling T/F personality trait in agent
+        rewards_res = []
+        updated_good_agnt_rewards = {}
+        for k,v in good_agnt_rewards:
+            for _k, _v in good_agnt_rewards:
+                if k == _k:
+                    continue
+                updated_good_agnt_rewards[k] = v + (k.F * _v)
+                rewards_res.append(v + (k.F * _v))
 
-        return obs_n, reward_n, done_n, info_n
+        updated_adversary_rewards = {}
+        for k,v in adversary_rewards:
+            for _k, _v in adversary_rewards:
+                if k == _k:
+                    continue
+                updated_adversary_rewards[k] = v + (k.F * _v)
+                rewards_res.append(v + (k.F * _v))
+
+        # all agents get total reward in cooperative case
+        reward = np.sum(rewards_res)
+        if self.shared_reward:
+            rewards_res = [reward] * self.n
+
+        return obs_n, rewards_res, done_n, info_n
 
     def reset(self):
         # reset world

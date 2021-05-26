@@ -80,7 +80,7 @@ class Agent(Entity):
 
 # properties of MBTI agent entities
 class MBTI_Agent(Entity):
-    def __init__(self, E=0, I=0, N=0, S=0, T=0, F=0, P=0, J=0):
+    def __init__(self, E=0, N=0, F=0, J=0):
         super(MBTI_Agent, self).__init__()
         # agents are movable by default
         self.movable = True
@@ -103,7 +103,17 @@ class MBTI_Agent(Entity):
 
         # script behavior to execute
         self.E = E
-        self.I = I
+        self.I = 1 - self.E
+        self.density = []
+
+        self.F = F
+        self.T = 1 - self.F
+
+        self.N = N
+        self.S = 1 - self.N
+
+        self.J = J
+        self.P = 1 - self.J
 
 # multi-agent world
 class World(object):

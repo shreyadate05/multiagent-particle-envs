@@ -1,5 +1,21 @@
 import numpy as np
 
+# personality in agents
+class MBTIPersonality:
+    def __init__(self, E, F, N, J):
+        self.E = E
+        self.I = 1 - self.E
+        self.density = []
+
+        self.F = F
+        self.T = 1 - self.F
+
+        self.N = N
+        self.S = 1 - self.N
+
+        self.J = J
+        self.P = 1 - self.J
+
 # physical/external base state of all entites
 class EntityState(object):
     def __init__(self):
@@ -101,19 +117,8 @@ class MBTI_Agent(Entity):
         # script behavior to execute
         self.action_callback = None
 
-        # script behavior to execute
-        self.E = E
-        self.I = 1 - self.E
-        self.density = []
-
-        self.F = F
-        self.T = 1 - self.F
-
-        self.N = N
-        self.S = 1 - self.N
-
-        self.J = J
-        self.P = 1 - self.J
+        # Agent's MBTI personality
+        self.personality = MBTIPersonality(E, F, N, J)
 
 # multi-agent world
 class World(object):

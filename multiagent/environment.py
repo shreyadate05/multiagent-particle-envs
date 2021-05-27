@@ -92,11 +92,12 @@ class MultiAgentEnv(gym.Env):
         # record observation for each agent
         good_agnt_rewards = {}
         adversary_rewards = {}
+        rewards_res = {}
         for agent in self.agents:
             obs_n.append(self._get_obs(agent))
             reward_n.append(self._get_reward(agent))
             done_n.append(self._get_done(agent))
-
+            rewards_res[agent.name] = 0
             info_n['n'].append(self._get_info(agent))
 
             if agent.adversary:
@@ -105,26 +106,30 @@ class MultiAgentEnv(gym.Env):
                 good_agnt_rewards[agent] = self._get_reward(agent)
         
         # Handling T/F personality trait in agent
-        rewards_res = []
         updated_good_agnt_rewards = {}
-        for k,v in good_agnt_rewards:
-            for _k, _v in good_agnt_rewards:
+        for k,v in good_agnt_rewards.items():
+            for _k, _v in good_agnt_rewards.items():
                 if k == _k:
                     continue
-                updated_good_agnt_rewards[k] = v + (k.F * _v)
-                rewards_res.append(v + (k.F * _v))
+                updated_good_agnt_rewards[k] = v + (k.personality.F * _v)
+                rewards_res[k.name] += v + (k.personality.F * _v)
 
         updated_adversary_rewards = {}
-        for k,v in adversary_rewards:
-            for _k, _v in adversary_rewards:
+        for k,v in adversary_rewards.items():
+            for _k, _v in adversary_rewards.items():
                 if k == _k:
                     continue
-                updated_adversary_rewards[k] = v + (k.F * _v)
-                rewards_res.append(v + (k.F * _v))
+                updated_adversary_rewards[k] = v + (k.personality.F * _v)
+                rewards_res[k.name] += v + (k.personality.F * _v)
+
+        reward = []
+        for k,v in rewards_res.items():
+            reward.append(v)
 
         # all agents get total reward in cooperative case
-        reward = np.sum(rewards_res)
+        reward = np.sum(reward)
         if self.shared_reward:
+            print("in shared reward")
             rewards_res = [reward] * self.n
 
         return obs_n, rewards_res, done_n, info_n

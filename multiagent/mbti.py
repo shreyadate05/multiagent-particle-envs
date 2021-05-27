@@ -28,8 +28,8 @@ def getMBTIReward(agent, world):
     density  = calculateDensity(agent, world)
     mbti_rew = 0
     if density == 0:
-        mbti_rew = 1  if agent.I == 1 else 0
+        mbti_rew = 1  if agent.personality.I == 1 else 0
     else:
-        mbti_rew +=  density if agent.E == 1 else density*-1
+        mbti_rew +=  density if agent.personality.E == 1 else density*-1
     #print("MBTI reward for agent ", agent, "  is: ", mbti_rew)
     return mbti_rew

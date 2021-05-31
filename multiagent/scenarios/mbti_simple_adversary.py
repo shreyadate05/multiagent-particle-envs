@@ -1,35 +1,35 @@
 import numpy as np
 from functools import reduce
-from multiagent.core import World, Agent, Landmark, MBTI_Agent
+from multiagent.core import World, Agent, Landmark, MBTI_Agent, userConfig
 from multiagent.scenario import BaseScenario
 import multiagent.mbti as mbti
 
 class Scenario(BaseScenario):
 
-    def make_world(self):
+    def make_world(self, conf):
         world = World()
         # set any world properties first
         world.dim_c = 2
-        num_agents = 6
+        num_agents = conf.num_agents
         world.num_agents = num_agents
-        num_adversaries = 2
+        num_adversaries = num_agents/3
         num_landmarks = num_agents - 1
         
         # add agents
-        world.agents = [MBTI_Agent() for i in range(num_agents)]
+        world.agents = mbti.getAgentListFromUserConfig(conf)
         for i, agent in enumerate(world.agents):
-            agent.name = 'agent %d' % i
+            agent.name = 'agent_%d' % i + '_' + agent.personality.type
             agent.collide = False
             agent.silent = True
             agent.size = 0.15
             if i < num_adversaries:
-                agent.name = 'adversary %d' % i
+                agent.name = 'adversary_%d' % i + '_' + agent.personality.type
                 agent.adversary = True
+                print("Created ", agent.name)
             else:
-                agent.name = 'agent %d' % (i - num_adversaries)
+                agent.name = 'agent_%d' % (i - num_adversaries) + '_' + agent.personality.type
                 agent.adversary = False
-                agent.E = 0
-                agent.I = 1
+                print("Created ", agent.name)
 
         # add landmarks
         world.landmarks = [Landmark() for i in range(num_landmarks)]
@@ -89,7 +89,7 @@ class Scenario(BaseScenario):
         # Agents are rewarded based on minimum agent distance to each landmark
         old_rew  =  self.adversary_reward(agent, world) if agent.adversary else self.agent_reward(agent, world)
         mbti_rew =  mbti.getMBTIReward(agent, world)
-        return mbti_rew*old_rew
+        return mbti_rew * old_rew
 
     def agent_reward(self, agent, world):
         # Rewarded based on how close any good agent is to the goal landmark, and how far the adversary is from it
@@ -130,7 +130,6 @@ class Scenario(BaseScenario):
             if np.sqrt(np.sum(np.square(agent.state.p_pos - agent.goal_a.state.p_pos))) < 2 * agent.goal_a.size:
                 adv_rew += 5
             return adv_rew
-
 
     def observation(self, agent, world):
         # get positions of all entities in this agent's reference frame

@@ -111,20 +111,23 @@ class MultiAgentEnv(gym.Env):
             for _k, _v in good_agnt_rewards.items():
                 if k == _k:
                     continue
-                updated_good_agnt_rewards[k] = v + (k.personality.F * _v)
-                rewards_res[k.name] += v + (k.personality.F * _v)
+                if k.personality.enableFT:
+                    updated_good_agnt_rewards[k] = v + (k.personality.F * _v)
+                    rewards_res[k.name] += v + (k.personality.F * _v)
 
         updated_adversary_rewards = {}
         for k,v in adversary_rewards.items():
             for _k, _v in adversary_rewards.items():
                 if k == _k:
                     continue
-                updated_adversary_rewards[k] = v + (k.personality.F * _v)
-                rewards_res[k.name] += v + (k.personality.F * _v)
+                if k.personality.enableFT:
+                    updated_adversary_rewards[k] = v + (k.personality.F * _v)
+                    rewards_res[k.name] += v + (k.personality.F * _v)
 
         reward = []
         for k,v in rewards_res.items():
             reward.append(v)
+        #print("Rewards: ", reward)
 
         # all agents get total reward in cooperative case
         reward = np.sum(reward)

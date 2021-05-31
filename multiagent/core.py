@@ -1,20 +1,40 @@
 import numpy as np
 
+class userConfig:
+    def __init__(self, numAgents, MBTIList):
+        self.num_agents = numAgents
+        self.mbti_agent_list = MBTIList
+
 # personality in agents
 class MBTIPersonality:
-    def __init__(self, E, F, N, J):
+    def __init__(self, E, N, F, P, eFlags):
         self.E = E
         self.I = 1 - self.E
         self.density = []
-
-        self.F = F
-        self.T = 1 - self.F
+        self.enableEI = True if int(eFlags[0]) == 1 else False
 
         self.N = N
         self.S = 1 - self.N
+        self.enableNS =  True if int(eFlags[1]) == 1 else False
 
-        self.J = J
-        self.P = 1 - self.J
+        self.F = F
+        self.T = 1 - self.F
+        self.enableFT =  True if int(eFlags[2]) == 1 else False
+
+        self.P = P
+        self.J = 1 - self.P
+        self.enableJP =  True if int(eFlags[3]) == 1 else False
+
+        type = ['0','0','0','0']
+        if self.enableEI:
+            type[0] = 'E' if self.E >= self.I else 'I'
+        if self.enableNS:
+            type[1] = 'N' if self.N >= self.S else 'S'
+        if self.enableFT:
+            type[2] = 'F' if self.F >= self.T else 'T'
+        if self.enableJP:
+            type[3] = 'P' if self.P >= self.J else 'J'
+        self.type = "".join(type)
 
 # physical/external base state of all entites
 class EntityState(object):
@@ -96,7 +116,7 @@ class Agent(Entity):
 
 # properties of MBTI agent entities
 class MBTI_Agent(Entity):
-    def __init__(self, E=0, N=0, F=0, J=0):
+    def __init__(self, E, N, F, P, eFlags):
         super(MBTI_Agent, self).__init__()
         # agents are movable by default
         self.movable = True
@@ -118,7 +138,7 @@ class MBTI_Agent(Entity):
         self.action_callback = None
 
         # Agent's MBTI personality
-        self.personality = MBTIPersonality(E, F, N, J)
+        self.personality = MBTIPersonality(E, N, F, P, eFlags)
 
 # multi-agent world
 class World(object):
